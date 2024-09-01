@@ -1,0 +1,68 @@
+####################################
+# ?? ? ???? ?? ??
+####################################
+server:
+  port: 8024                    # ?? ??
+
+spring:
+  application:
+    name: bookRental     # ????? ??
+  devtools:
+    livereload:
+      enabled: true           # ?? ??? ??
+    restart:
+      additional-exclude: static/**,public/**
+      enabled: true           # ?? ??? ??
+      preserve-session: true  # ?? ?? ??
+  thymeleaf:
+    cache: false              # ?? ??
+
+####################################
+# ?????? ??
+####################################
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost/study?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+
+####################################
+# JPA ??
+####################################
+  jpa:
+    open-in-view: true      #
+    hibernate:
+      ddl-auto: update     # create, update, ...
+    show-sql: true          # SQL ?? ???
+    properties:
+      hibernate:
+        format_sql: true    # ?? ???? ???
+        default_batch_fetch_size: 1000  # ??? ??? ??? ? in ?? ?? ??
+    #database-platform: org.hibernate.dialect.MySQL8Dialect  # MySQL8 ?? ??
+
+  ####################################
+  # Security User
+  ####################################
+  security:
+    user:
+      name: test@test.com
+      password: 1111
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+itemImgLocation: C:/jeaslyn/img
+uploadPath: file:///C:/jeaslyn/
+
+####################################
+# ?? ?? ??
+####################################
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace  # ???? ??? ???? ??
