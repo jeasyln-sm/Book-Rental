@@ -55,6 +55,12 @@ public class MemberService implements UserDetailsService {
                 .build();
     }
 
+
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                               .orElseThrow(() -> new RuntimeException("Member not found with email: " + email));
+    }
+
     public boolean isEmailExists(String email) {
         boolean exists = memberRepository.findByEmail(email).isPresent();
         logger.debug("이메일이 있는지 확인 : {} - 결과 : {}", email, exists);
