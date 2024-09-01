@@ -41,9 +41,14 @@ dependencies {
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.modelmapper:modelmapper:3.2.0'
 
+	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+		annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
 	//JUnit
 	testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation 'org.mockito:mockito-core'
+
 }
 
 tasks.named('test') {
