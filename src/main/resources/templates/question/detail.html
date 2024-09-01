@@ -71,7 +71,7 @@
     </div>
 
     <!-- 답변 작성 폼 -->
-    <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerDto}" method="post" class="my-3">
+    <form th:action="@{|/answer/new/${question.id}|}" th:object="${answerDto}" method="post" class="my-3">
         <div class="form-floating mb-3">
             <textarea name="content" id="content" rows="6" class="form-control" placeholder="답변을 입력해주세요"></textarea>
             <label for="content">답변 내용</label>
