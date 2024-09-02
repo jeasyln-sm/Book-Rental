@@ -12,6 +12,7 @@ import smsm.bookRental.entity.Question;
 import smsm.bookRental.excption.DataNotFoundException;
 import smsm.bookRental.repository.QuestionRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class QuestionService {
     private final MemberService memberService;
 
 
+    // 전체 목록 가져오기
     public List<QuestionDto> getList() {
     List<Question> questions = this.questionRepository.findAll();
     List<QuestionDto> questionDtos = new ArrayList<>(questions.size());
@@ -55,11 +57,12 @@ public class QuestionService {
         if(question.isPresent()) {
             return question.get();
         } else {
-            throw new DataNotFoundException("question not found");
+            throw new DataNotFoundException("해당 질문을 찾을 수 없습니다.");
         }
     }
 
 
+    // 질문 등록
     @Transactional
     public void create(QuestionDto questionDto, Member member) {
         Question question = Question.builder()
@@ -69,6 +72,21 @@ public class QuestionService {
                 .member(member)
                 .build();
 
+        questionRepository.save(question);
+    }
+
+
+    // 질문 수정
+    public void update(Long id, QuestionDto questionDto, String username) throws AccessDeniedException {
+        Question question = getQuestion(id);
+        Member member = question.getMember();
+
+        if (member == null || !member.getEmail().equals(username)) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
+        }
+
+        question.setSubject(questionDto.getSubject());
+        question.setContent(questionDto.getContent());
         questionRepository.save(question);
     }
 }
