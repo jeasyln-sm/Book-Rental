@@ -5,9 +5,13 @@ import smsm.bookRental.entity.Answer;
 import smsm.bookRental.entity.Member;
 import smsm.bookRental.entity.Question;
 
+import java.time.LocalDateTime;
+
 public class AnswerConverter {
 
     public static AnswerDto toDto(Answer answer) {
+        Long questionId = (answer.getQuestion() != null) ? answer.getQuestion().getId() : null;
+
         return AnswerDto.builder()
                 .id(answer.getId())
                 .memberDto(MemberConverter.toDto(answer.getMember()))
@@ -28,7 +32,7 @@ public class AnswerConverter {
                 .member(member)
                 .question(question)
                 .content(answerDto.getContent())
-                .createDate(answerDto.getCreateDate())
+                .createDate(LocalDateTime.now())
                 .build();
     }
 }

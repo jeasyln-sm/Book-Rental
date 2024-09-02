@@ -74,6 +74,14 @@
                 <span class="badge badge-custom p-2">
                     <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
                 </span>
+                <!-- 수정 및 삭제 버튼 추가 -->
+                <div>
+                    <a th:href="@{|/answer/edit/${answer.id}|}" class="btn btn-warning btn-sm me-2" role="button">수정</a>
+                    <form th:action="@{|/answer/delete/${answer.id}|}" method="post" style="display:inline;">
+                        <input type="submit" value="삭제" class="btn btn-danger btn-sm">
+                        <input type="hidden" name="_method" value="delete">
+                    </form>
+                </div>
             </div>
         </div>
     </div>

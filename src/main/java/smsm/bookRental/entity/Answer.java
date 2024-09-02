@@ -37,7 +37,7 @@ public class Answer {
 
     private LocalDateTime createDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Question question;
 
     @ManyToOne(fetch = FetchType.LAZY)
