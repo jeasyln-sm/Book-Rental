@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import smsm.bookRental.excption.CustomAccessDeniedHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +33,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated());
 
         http.exceptionHandling(exception -> exception
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+                .accessDeniedPage("/error/accessDenied")
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler()));
 
         return http.build();
     }
