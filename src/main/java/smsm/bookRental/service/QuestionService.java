@@ -10,6 +10,7 @@ import smsm.bookRental.dto.QuestionDto;
 import smsm.bookRental.entity.Member;
 import smsm.bookRental.entity.Question;
 import smsm.bookRental.excption.DataNotFoundException;
+import smsm.bookRental.repository.AnswerRepository;
 import smsm.bookRental.repository.QuestionRepository;
 
 import java.nio.file.AccessDeniedException;
@@ -24,6 +25,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final MemberService memberService;
+    private final AnswerRepository answerRepository;
 
 
     // 전체 목록 가져오기
@@ -88,5 +90,12 @@ public class QuestionService {
         question.setSubject(questionDto.getSubject());
         question.setContent(questionDto.getContent());
         questionRepository.save(question);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Question question = getQuestion(id);
+        answerRepository.deleteAll(question.getAnswers());
+        questionRepository.delete(question);
     }
 }

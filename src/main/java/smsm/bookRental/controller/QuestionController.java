@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import smsm.bookRental.converter.QuestionConverter;
 import smsm.bookRental.dto.QuestionDto;
+import smsm.bookRental.entity.Answer;
 import smsm.bookRental.entity.Member;
 import smsm.bookRental.entity.Question;
+import smsm.bookRental.excption.DataNotFoundException;
+import smsm.bookRental.repository.MemberRepository;
 import smsm.bookRental.service.AnswerService;
 import smsm.bookRental.service.MemberService;
 import smsm.bookRental.service.QuestionService;
@@ -35,6 +40,7 @@ public class QuestionController {
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
 
     // 질문 목록 전체 불러오기
@@ -111,5 +117,29 @@ public class QuestionController {
         }
 
         return "redirect:/question/detail/" + id;
+    }
+
+
+    // 질문 삭제
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Long id,
+                         @AuthenticationPrincipal UserDetails userDetails) {
+
+        Member member = this.memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        try {
+            Question question = questionService.getQuestion(id);
+            if (!question.getMember().equals(member)) {
+                return "error/accessDenied";
+            }
+            questionService.delete(id);
+        } catch (DataNotFoundException e) {
+            return "error/dataNotFound";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error/accessDenied";
+        }
+        return "redirect:/";
     }
 }
