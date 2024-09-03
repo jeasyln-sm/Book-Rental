@@ -56,9 +56,16 @@ public class AnswerService {
         this.answerRepository.save(answer);
     }
 
-    public void delete(Long id) {
+    @Transactional
+    public void delete(Long id, Member member) {
         Answer answer = getAnswer(id);
+
+        // 권한 검사
+        if (!answer.getMember().equals(member) &&
+            !member.getRole().equals("ROLE_ADMIN")) {
+            throw new RuntimeException("삭제 권한이 없습니다.");
+        }
+
         answerRepository.delete(answer);
     }
-
 }

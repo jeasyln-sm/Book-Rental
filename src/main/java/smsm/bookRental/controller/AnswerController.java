@@ -20,6 +20,7 @@ import smsm.bookRental.dto.AnswerDto;
 import smsm.bookRental.entity.Answer;
 import smsm.bookRental.entity.Member;
 import smsm.bookRental.entity.Question;
+import smsm.bookRental.excption.DataNotFoundException;
 import smsm.bookRental.repository.MemberRepository;
 import smsm.bookRental.service.AnswerService;
 import smsm.bookRental.service.QuestionService;
@@ -57,10 +58,7 @@ public class AnswerController {
     public String editAnswerForm(Model model, @PathVariable("id") Long id,
                                  @AuthenticationPrincipal UserDetails userDetails) {
         Answer answer = answerService.getAnswer(id);
-
-        if (!answer.getMember().getEmail().equals(userDetails.getUsername())) {
-            return "error/accessDenied";
-        }
+        checkAuthorization(answer, userDetails);
 
         AnswerDto answerDto = AnswerConverter.toDto(answer);
         model.addAttribute("answer", answerDto);
@@ -78,30 +76,40 @@ public class AnswerController {
         try {
             answerService.update(id, content, member);
         } catch (RuntimeException e) {
-            return "error/accessDenied"; // 권한이 없는 경우 접근 거부 페이지로 이동
+            return "error/accessDenied";
         }
 
         Answer answer = answerService.getAnswer(id);
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
     }
 
-
-    // 답변 삭제
     @PostMapping("delete/{id}")
     public String deleteAnswer(@PathVariable("id") Long id,
                                @AuthenticationPrincipal UserDetails userDetails) {
 
-        Answer answer = answerService.getAnswer(id);
-        if (!answer.getMember().getEmail().equals(userDetails.getUsername()) &&
-            !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
-        }
+        Member member = this.memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        Answer answer;
 
         try {
-            answerService.delete(id);
+            answer = answerService.getAnswer(id);
+            answerService.delete(id, member);
+        } catch (DataNotFoundException e) {
+            return "error/dataNotFound";
         } catch (AccessDeniedException e) {
-            throw new RuntimeException(e);
+            return "error/accessDenied";
         }
+
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
     }
+
+    // 권한 검사
+    private void checkAuthorization(Answer answer, UserDetails userDetails) {
+        if (!answer.getMember().getEmail().equals(userDetails.getUsername()) &&
+            !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+    }
+
 }
