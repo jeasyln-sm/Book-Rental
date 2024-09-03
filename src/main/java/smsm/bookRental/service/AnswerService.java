@@ -55,4 +55,10 @@ public class AnswerService {
         answer.setCreateDate(LocalDateTime.now());
         this.answerRepository.save(answer);
     }
+
+    public void delete(Long id) {
+        Answer answer = getAnswer(id);
+        answerRepository.delete(answer);
+    }
+
 }

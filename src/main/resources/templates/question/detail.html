@@ -36,6 +36,11 @@
             resize: vertical; /* 텍스트 영역 크기 조절 가능 */
         }
     </style>
+    <script>
+        function confirmDeletion() {
+            return confirm("정말로 삭제하시겠습니까?");
+        }
+    </script>
 </head>
 <body>
 <div layout:fragment="content" class="container content-container">
@@ -52,7 +57,7 @@
                 <!-- 수정 및 삭제 버튼 추가 -->
                 <div>
                     <a th:href="@{|/question/edit/${question.id}|}" class="btn btn-warning btn-sm me-2" role="button">수정</a>
-                    <form th:action="@{|/question/delete/${question.id}|}" method="post" style="display:inline;">
+                    <form th:action="@{|/question/delete/${question.id}|}" method="post" style="display:inline;" onsubmit="return confirmDeletion();">
                         <input type="submit" value="삭제" class="btn btn-danger btn-sm">
                         <input type="hidden" name="_method" value="delete">
                     </form>
@@ -77,7 +82,7 @@
                 <!-- 수정 및 삭제 버튼 추가 -->
                 <div>
                     <a th:href="@{|/answer/edit/${answer.id}|}" class="btn btn-warning btn-sm me-2" role="button">수정</a>
-                    <form th:action="@{|/answer/delete/${answer.id}|}" method="post" style="display:inline;">
+                    <form th:action="@{|/answer/delete/${answer.id}|}" method="post" style="display:inline;" onsubmit="return confirmDeletion();">
                         <input type="submit" value="삭제" class="btn btn-danger btn-sm">
                         <input type="hidden" name="_method" value="delete">
                     </form>

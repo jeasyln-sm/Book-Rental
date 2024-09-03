@@ -3,10 +3,12 @@ package smsm.bookRental.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,6 +82,26 @@ public class AnswerController {
         }
 
         Answer answer = answerService.getAnswer(id);
+        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    }
+
+
+    // 답변 삭제
+    @PostMapping("delete/{id}")
+    public String deleteAnswer(@PathVariable("id") Long id,
+                               @AuthenticationPrincipal UserDetails userDetails) {
+
+        Answer answer = answerService.getAnswer(id);
+        if (!answer.getMember().getEmail().equals(userDetails.getUsername()) &&
+            !userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
+
+        try {
+            answerService.delete(id);
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
         return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
     }
 }
